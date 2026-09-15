@@ -1,0 +1,364 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Student Exam Performance Prediction</title>
+
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: "Segoe UI", Arial, sans-serif;
+      }
+
+      body {
+        min-height: 100vh;
+        background: #f4f6f9;
+        color: #1f2937;
+      }
+
+      .top-bar {
+        height: 6px;
+        background: #17365d;
+      }
+
+      .header {
+        background: #ffffff;
+        border-bottom: 1px solid #d9dee5;
+        padding: 24px 8%;
+      }
+
+      .header-content {
+        max-width: 1100px;
+        margin: auto;
+      }
+
+      .header h1 {
+        color: #17365d;
+        font-size: 28px;
+        font-weight: 600;
+        margin-bottom: 6px;
+      }
+
+      .header p {
+        color: #6b7280;
+        font-size: 14px;
+      }
+
+      .main {
+        max-width: 1000px;
+        margin: 40px auto;
+        padding: 0 20px;
+      }
+
+      .card {
+        background: #ffffff;
+        border: 1px solid #d9dee5;
+        border-radius: 6px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.06);
+      }
+
+      .card-header {
+        padding: 22px 30px;
+        border-bottom: 1px solid #e5e7eb;
+      }
+
+      .card-header h2 {
+        color: #17365d;
+        font-size: 20px;
+        font-weight: 600;
+        margin-bottom: 5px;
+      }
+
+      .card-header p {
+        color: #6b7280;
+        font-size: 13px;
+      }
+
+      .form {
+        padding: 30px;
+      }
+
+      .section-title {
+        color: #374151;
+        font-size: 15px;
+        font-weight: 600;
+        margin-bottom: 20px;
+        padding-bottom: 10px;
+        border-bottom: 1px solid #e5e7eb;
+      }
+
+      .form-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 22px 28px;
+      }
+
+      .form-group {
+        display: flex;
+        flex-direction: column;
+      }
+
+      label {
+        color: #374151;
+        font-size: 13px;
+        font-weight: 600;
+        margin-bottom: 7px;
+      }
+
+      select,
+      input {
+        width: 100%;
+        height: 44px;
+        padding: 0 12px;
+        border: 1px solid #cbd5e1;
+        border-radius: 4px;
+        background: #ffffff;
+        color: #374151;
+        font-size: 14px;
+        outline: none;
+        transition:
+          border-color 0.2s,
+          box-shadow 0.2s;
+      }
+
+      select:focus,
+      input:focus {
+        border-color: #17365d;
+        box-shadow: 0 0 0 2px rgba(23, 54, 93, 0.1);
+      }
+
+      select:invalid {
+        color: #6b7280;
+      }
+
+      .score-section {
+        margin-top: 30px;
+      }
+
+      .button-container {
+        margin-top: 30px;
+        display: flex;
+        justify-content: flex-end;
+      }
+
+      .predict-btn {
+        min-width: 210px;
+        height: 45px;
+        padding: 0 25px;
+        border: none;
+        border-radius: 4px;
+        background: #17365d;
+        color: #ffffff;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background 0.2s;
+      }
+
+      .predict-btn:hover {
+        background: #0f2745;
+      }
+
+      .result {
+        margin-top: 25px;
+        padding: 22px 30px;
+        background: #f8fafc;
+        border: 1px solid #d9dee5;
+        border-left: 4px solid #17365d;
+        border-radius: 4px;
+      }
+
+      .result-title {
+        color: #6b7280;
+        font-size: 13px;
+        font-weight: 600;
+        margin-bottom: 6px;
+      }
+
+      .result-score {
+        color: #17365d;
+        font-size: 30px;
+        font-weight: 700;
+      }
+
+      .result-description {
+        color: #6b7280;
+        font-size: 12px;
+        margin-top: 3px;
+      }
+
+      .footer {
+        text-align: center;
+        padding: 25px;
+        color: #9ca3af;
+        font-size: 12px;
+      }
+
+      @media (max-width: 700px) {
+        .header {
+          padding: 20px;
+        }
+
+        .header h1 {
+          font-size: 23px;
+        }
+
+        .main {
+          margin: 25px auto;
+        }
+
+        .form {
+          padding: 22px;
+        }
+
+        .form-grid {
+          grid-template-columns: 1fr;
+          gap: 18px;
+        }
+
+        .button-container {
+          justify-content: stretch;
+        }
+
+        .predict-btn {
+          width: 100%;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="top-bar"></div>
+
+    <header class="header">
+      <div class="header-content">
+        <h1>Student Exam Performance Prediction</h1>
+        <p>Machine Learning Based Academic Performance Assessment</p>
+      </div>
+    </header>
+
+    <main class="main">
+      <div class="card">
+        <div class="card-header">
+          <h2>Student Information</h2>
+          <p>Enter the student's academic and demographic information below.</p>
+        </div>
+
+        <form
+          action="{{ url_for('predict_datapoint') }}"
+          method="post"
+          class="form"
+        >
+          <div class="section-title">Student Details</div>
+
+          <div class="form-grid">
+            <div class="form-group">
+              <label>Gender</label>
+              <select name="gender" required>
+                <option value="" selected disabled>Select Gender</option>
+                <option value="male">Male</option>
+                <option value="female">Female</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label>Race or Ethnicity</label>
+              <select name="ethnicity" required>
+                <option value="" selected disabled>Select Ethnicity</option>
+                <option value="group A">Group A</option>
+                <option value="group B">Group B</option>
+                <option value="group C">Group C</option>
+                <option value="group D">Group D</option>
+                <option value="group E">Group E</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label>Parental Level of Education</label>
+              <select name="parental_level_of_education" required>
+                <option value="" selected disabled>
+                  Select Education Level
+                </option>
+                <option value="associate's degree">Associate's Degree</option>
+                <option value="bachelor's degree">Bachelor's Degree</option>
+                <option value="high school">High School</option>
+                <option value="master's degree">Master's Degree</option>
+                <option value="some college">Some College</option>
+                <option value="some high school">Some High School</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label>Lunch Type</label>
+              <select name="lunch" required>
+                <option value="" selected disabled>Select Lunch Type</option>
+                <option value="free/reduced">Free/Reduced</option>
+                <option value="standard">Standard</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label>Test Preparation Course</label>
+              <select name="test_preparation_course" required>
+                <option value="" selected disabled>Select Course Status</option>
+                <option value="none">None</option>
+                <option value="completed">Completed</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="score-section">
+            <div class="section-title">Previous Examination Scores</div>
+
+            <div class="form-grid">
+              <div class="form-group">
+                <label>Reading Score</label>
+                <input
+                  type="number"
+                  name="reading_score"
+                  placeholder="Enter score (0-100)"
+                  min="0"
+                  max="100"
+                  required
+                />
+              </div>
+
+              <div class="form-group">
+                <label>Writing Score</label>
+                <input
+                  type="number"
+                  name="writing_score"
+                  placeholder="Enter score (0-100)"
+                  min="0"
+                  max="100"
+                  required
+                />
+              </div>
+            </div>
+          </div>
+
+          <div class="button-container">
+            <button type="submit" class="predict-btn">
+              Predict Mathematics Score
+            </button>
+          </div>
+        </form>
+      </div>
+
+      {% if results %}
+      <div class="result">
+        <div class="result-title">PREDICTED MATHEMATICS SCORE</div>
+
+        <div class="result-score">{{ results }}</div>
+
+        <div class="result-description">Predicted score out of 100</div>
+      </div>
+      {% endif %}
+    </main>
+
+    <footer class="footer">Student Exam Performance Prediction System</footer>
+  </body>
+</html>
